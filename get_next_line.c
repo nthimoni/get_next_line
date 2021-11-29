@@ -6,7 +6,7 @@
 /*   By: nthimoni <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 14:23:37 by nthimoni          #+#    #+#             */
-/*   Updated: 2021/11/29 17:18:09 by nthimoni         ###   ########.fr       */
+/*   Updated: 2021/11/29 22:25:45 by nthimoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,22 +37,24 @@ static char	*parse(char **prev)
 	}
 	endl = ft_strchr(*prev, '\n');
 	tmp = *prev;
-	ret = ft_substr(*prev, 0, endl - *prev);
+	ret = ft_substr(*prev, 0, endl - *prev + 1);
 	*prev = ft_substr(*prev, endl - *prev + 1, ft_strlen(endl + 1));
 	free(tmp);
+	if (!*prev)
+		free_ptr((void *)&ret);
 	return (ret);
 }
 
 static int	read_file(int fd, char **prev)
 {	
-	char	buffer[BUFFER_SIZE];
+	char	buffer[BUFFER_SIZE + 1];
 	int		bytes;
 	char	*tmp;
 
 	bytes = 1;
 	while (!ft_strchr(*prev, '\n') && bytes != 0)
 	{
-		bytes = read(fd, buffer, BUFFER_SIZE - 1);
+		bytes = read(fd, buffer, BUFFER_SIZE);
 		if (bytes == -1)
 			return (0);
 		if (bytes == 0 && ft_strlen(*prev) == 0)
@@ -69,10 +71,10 @@ static int	read_file(int fd, char **prev)
 
 char	*get_next_line(int fd)
 {
-	static char	*prev;
+	static char	*prev = NULL;
 	char		*ret;
 
-	if (fd == -1 || BUFFER_SIZE <= 0 || read(fd, NULL, 0) == -1)
+	if (fd == -1 || BUFFER_SIZE <= 0)
 		return (NULL);
 	if (!prev)
 	{
@@ -100,11 +102,11 @@ char	*get_next_line(int fd)
 int main()
 {
 	char	*ptr;
-	int fd = open("reading.txt", O_RDONLY);
+	int fd = open("/mnt/nfs/homes/nthimoni/Desktop/projects42/C/get_next_line/gnlTester/files/big_line_no_nl", O_RDONLY);
 	ptr = get_next_line(fd);
 	while (ptr)
 	{
-		printf("%s\n", ptr);
+		printf("%s", ptr);
 		free(ptr);
 		ptr = get_next_line(fd);
 	}
