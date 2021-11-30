@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: nthimoni <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 14:23:37 by nthimoni          #+#    #+#             */
-/*   Updated: 2021/11/30 15:17:01 by nthimoni         ###   ########.fr       */
+/*   Updated: 2021/11/30 19:57:01 by nthimoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,29 +70,32 @@ static int	read_file(int fd, char **prev, char *buffer)
 
 char	*get_next_line(int fd)
 {
-	static char	*prev = NULL;
+	static char	*prev[_SC_OPEN_MAX];
 	char		*ret;
 	char		*buffer;
 
-	if (fd == -1 || BUFFER_SIZE <= 0)
-		return (NULL);
-	if (!prev)
-	{
-		prev = malloc(1);
-		if (!prev)
-			return (NULL);
-		prev[0] = '\0';
-	}
 	buffer = malloc(BUFFER_SIZE + 1);
-	if (!read_file(fd, &prev, buffer))
+	if (fd == -1 || BUFFER_SIZE <= 0 || read(fd, buffer, 0))
 	{
-		free_ptr((void *)&prev);
+		free(buffer);
+		return (NULL);
+	}
+	if (!prev[fd])
+	{
+		prev[fd] = malloc(1);
+		if (!prev[fd])
+			return (NULL);
+		prev[fd][0] = '\0';
+	}
+	if (!read_file(fd, &prev[fd], buffer))
+	{
+		free_ptr((void *)&prev[fd]);
 		free(buffer);
 		return (NULL);
 	}
 	free(buffer);
-	ret = parse(&prev);
+	ret = parse(&prev[fd]);
 	if (!ret)
-		free_ptr((void *)&prev);
+		free_ptr((void *)&prev[fd]);
 	return (ret);
 }
