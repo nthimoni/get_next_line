@@ -6,7 +6,7 @@
 /*   By: nthimoni <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 14:23:37 by nthimoni          #+#    #+#             */
-/*   Updated: 2021/11/30 19:57:01 by nthimoni         ###   ########.fr       */
+/*   Updated: 2021/12/01 15:51:13 by nthimoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,16 +70,12 @@ static int	read_file(int fd, char **prev, char *buffer)
 
 char	*get_next_line(int fd)
 {
-	static char	*prev[_SC_OPEN_MAX];
+	static char	*prev[OPEN_MAX];
 	char		*ret;
 	char		*buffer;
 
-	buffer = malloc(BUFFER_SIZE + 1);
-	if (fd == -1 || BUFFER_SIZE <= 0 || read(fd, buffer, 0))
-	{
-		free(buffer);
+	if (fd == -1 || BUFFER_SIZE <= 0 || read(fd, prev, 0))
 		return (NULL);
-	}
 	if (!prev[fd])
 	{
 		prev[fd] = malloc(1);
@@ -87,6 +83,7 @@ char	*get_next_line(int fd)
 			return (NULL);
 		prev[fd][0] = '\0';
 	}
+	buffer = malloc(BUFFER_SIZE + 1);
 	if (!read_file(fd, &prev[fd], buffer))
 	{
 		free_ptr((void *)&prev[fd]);
