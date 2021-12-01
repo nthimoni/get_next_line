@@ -6,11 +6,11 @@
 /*   By: nthimoni <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/28 15:50:17 by nthimoni          #+#    #+#             */
-/*   Updated: 2021/11/29 15:43:55 by nthimoni         ###   ########.fr       */
+/*   Updated: 2021/12/01 18:41:31 by nthimoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 
 char	*ft_substr(char const *s, unsigned int start, size_t len)
 {

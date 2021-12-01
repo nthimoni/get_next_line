@@ -6,17 +6,18 @@
 /*   By: nthimoni <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 14:23:37 by nthimoni          #+#    #+#             */
-/*   Updated: 2021/12/01 15:51:13 by nthimoni         ###   ########.fr       */
+/*   Updated: 2021/12/01 18:43:17 by nthimoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 #include <unistd.h>
 
 static void	free_ptr(void **ptr)
 {
 	free(*ptr);
 	*ptr = NULL;
+	return (NULL);
 }
 
 static char	*parse(char **prev)
@@ -68,27 +69,36 @@ static int	read_file(int fd, char **prev, char *buffer)
 	return (1);
 }
 
+char	*newempty(void)
+{
+	char	*emp;
+
+	emp = malloc(1);
+	if (!emp)
+		return (NULL);
+	emp[0] = '\0';
+	return (emp);
+}
+
 char	*get_next_line(int fd)
 {
-	static char	*prev[OPEN_MAX];
+	static char	*prev[OPEN_MAX] = NULL;
 	char		*ret;
 	char		*buffer;
 
-	if (fd == -1 || BUFFER_SIZE <= 0 || read(fd, prev, 0))
+	if (fd == -1 || BUFFER_SIZE <= 0)
 		return (NULL);
 	if (!prev[fd])
 	{
-		prev[fd] = malloc(1);
+		prev[fd] = newempty();
 		if (!prev[fd])
 			return (NULL);
-		prev[fd][0] = '\0';
 	}
 	buffer = malloc(BUFFER_SIZE + 1);
 	if (!read_file(fd, &prev[fd], buffer))
 	{
 		free_ptr((void *)&prev[fd]);
-		free(buffer);
-		return (NULL);
+		return (free_ptr(&buffer));
 	}
 	free(buffer);
 	ret = parse(&prev[fd]);
