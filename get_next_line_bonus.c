@@ -6,14 +6,14 @@
 /*   By: nthimoni <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/27 14:23:37 by nthimoni          #+#    #+#             */
-/*   Updated: 2021/12/01 18:43:17 by nthimoni         ###   ########.fr       */
+/*   Updated: 2021/12/01 19:07:12 by nthimoni         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line_bonus.h"
 #include <unistd.h>
 
-static void	free_ptr(void **ptr)
+static char	*free_ptr(void **ptr)
 {
 	free(*ptr);
 	*ptr = NULL;
@@ -82,7 +82,7 @@ char	*newempty(void)
 
 char	*get_next_line(int fd)
 {
-	static char	*prev[OPEN_MAX] = NULL;
+	static char	*prev[OPEN_MAX];
 	char		*ret;
 	char		*buffer;
 
@@ -95,10 +95,12 @@ char	*get_next_line(int fd)
 			return (NULL);
 	}
 	buffer = malloc(BUFFER_SIZE + 1);
+	if (!buffer)
+		return (NULL);
 	if (!read_file(fd, &prev[fd], buffer))
 	{
 		free_ptr((void *)&prev[fd]);
-		return (free_ptr(&buffer));
+		return (free_ptr((void *)&buffer));
 	}
 	free(buffer);
 	ret = parse(&prev[fd]);
